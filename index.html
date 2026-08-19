@@ -472,6 +472,66 @@ html[dir="ltr"] #a11yPanel button{text-align:left}
 <div class="overlay" id="overlay"><div class="modal" id="modal"></div></div>
 
 <script>
+/* ===== i18n (HE/EN) ===== */
+const I18N={
+ tagline:{he:"המאמן שלך להצלחה",en:"Your coach for success"},
+ nav_how:{he:"איך זה עובד",en:"How it works"},
+ nav_signup:{he:"אני מאמן",en:"I'm a coach"},
+ nav_login:{he:"כניסת מאמן",en:"Coach login"},
+ hero_t1:{he:"המאמן שלך",en:"Your coach"},
+ hero_t2:{he:"להצלחה",en:"for success"},
+ hero_lede:{he:"פאדל וטניס · מצאו מאמן, שלחו פנייה, והמאמן חוזר אליכם. בלי לשלם מראש.",en:"Padel & tennis · find a coach, send an inquiry, and they'll get back to you. No upfront payment."},
+ hero_find:{he:"מצאו מאמן",en:"Find a coach"},
+ hero_coach:{he:"אני מאמן",en:"I'm a coach"},
+ avail:{he:"מאמנים זמינים",en:"Available coaches"},
+ f_all:{he:"הכל",en:"All"},
+ f_padel:{he:"פאדל",en:"Padel"},
+ f_tennis:{he:"טניס",en:"Tennis"},
+ areas_all:{he:"כל האזורים",en:"All areas"},
+ acc_title:{he:"נגישות",en:"Accessibility"},
+ acc_bigger:{he:"הגדלת טקסט A+",en:"Bigger text A+"},
+ acc_smaller:{he:"הקטנת טקסט A−",en:"Smaller text A−"},
+ acc_contrast:{he:"ניגודיות גבוהה",en:"High contrast"},
+ acc_links:{he:"הדגשת קישורים",en:"Highlight links"},
+ acc_reset:{he:"איפוס",en:"Reset"}
+};
+const T={
+ inquiry:{he:"שליחת פנייה",en:"Send inquiry"},
+ years:{he:"שנות ניסיון",en:"yrs experience"},
+ count:{he:"מאמנים",en:"coaches"},
+ padel:{he:"פאדל",en:"Padel"},
+ tennis:{he:"טניס",en:"Tennis"},
+ both:{he:"טניס ופאדל",en:"Tennis & Padel"}
+};
+let LANG='he';
+function t(k){return (T[k]&&T[k][LANG])||k;}
+function applyLang(lang){
+ LANG=lang;
+ document.documentElement.lang=lang;
+ document.documentElement.dir=lang==='he'?'rtl':'ltr';
+ document.querySelectorAll('[data-i18n]').forEach(el=>{
+   const k=el.getAttribute('data-i18n');
+   if(I18N[k]) el.textContent=I18N[k][lang];
+ });
+ const lb=document.getElementById('langBtn'); if(lb) lb.textContent=lang==='he'?'EN':'עב';
+ try{if(typeof render==='function')render();}catch(e){}
+ try{localStorage.setItem('coachone_lang',lang);}catch(e){}
+}
+function toggleLang(){applyLang(LANG==='he'?'en':'he');}
+
+/* ===== accessibility ===== */
+let a11y={zoom:1,contrast:false,links:false};
+function a11yApply(){
+ document.body.style.zoom=a11y.zoom;
+ document.body.classList.toggle('a11y-contrast',a11y.contrast);
+ document.body.classList.toggle('a11y-links',a11y.links);
+ try{localStorage.setItem('coachone_a11y',JSON.stringify(a11y));}catch(e){}
+}
+function a11yZoom(d){a11y.zoom=Math.min(1.5,Math.max(0.8,+(a11y.zoom+d).toFixed(2)));a11yApply();}
+function a11yToggle(k){a11y[k]=!a11y[k];a11yApply();}
+function a11yReset(){a11y={zoom:1,contrast:false,links:false};a11yApply();}
+function toggleA11y(){document.getElementById('a11yPanel').classList.toggle('open');}
+
 const coaches=[
   {id:101,name:"גיא טלפיר",sport:"both",area:"השרון",specialty:"שחקן טניס טופ 5 בארץ בנוער ושחקן פעיל בפאדל רמה A. \"טכניקה נכונה זה המפתח להצלחה\".",rating:5,years:10,color:"#34D8A6",plan:"free",leads:0,phone:"054-588-2231",email:"",photo:"data:image/jpeg;base64,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"},
   {id:1,name:"דניאל אבני",sport:"padel",area:"תל אביב",specialty:"מתמחה במתחילים ובשיפור טכניקת ולה. שיעורים אנרגטיים וסבלניים.",rating:5,years:7,color:"#34D8A6",plan:"free",leads:2,phone:"052-1112233",email:"daniel@example.com"},
@@ -650,66 +710,6 @@ overlay.addEventListener('click',e=>{if(e.target===overlay)closeModal();});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
 
 render();
-
-/* ===== i18n (HE/EN) ===== */
-const I18N={
- tagline:{he:"המאמן שלך להצלחה",en:"Your coach for success"},
- nav_how:{he:"איך זה עובד",en:"How it works"},
- nav_signup:{he:"אני מאמן",en:"I'm a coach"},
- nav_login:{he:"כניסת מאמן",en:"Coach login"},
- hero_t1:{he:"המאמן שלך",en:"Your coach"},
- hero_t2:{he:"להצלחה",en:"for success"},
- hero_lede:{he:"פאדל וטניס · מצאו מאמן, שלחו פנייה, והמאמן חוזר אליכם. בלי לשלם מראש.",en:"Padel & tennis · find a coach, send an inquiry, and they'll get back to you. No upfront payment."},
- hero_find:{he:"מצאו מאמן",en:"Find a coach"},
- hero_coach:{he:"אני מאמן",en:"I'm a coach"},
- avail:{he:"מאמנים זמינים",en:"Available coaches"},
- f_all:{he:"הכל",en:"All"},
- f_padel:{he:"פאדל",en:"Padel"},
- f_tennis:{he:"טניס",en:"Tennis"},
- areas_all:{he:"כל האזורים",en:"All areas"},
- acc_title:{he:"נגישות",en:"Accessibility"},
- acc_bigger:{he:"הגדלת טקסט A+",en:"Bigger text A+"},
- acc_smaller:{he:"הקטנת טקסט A−",en:"Smaller text A−"},
- acc_contrast:{he:"ניגודיות גבוהה",en:"High contrast"},
- acc_links:{he:"הדגשת קישורים",en:"Highlight links"},
- acc_reset:{he:"איפוס",en:"Reset"}
-};
-const T={
- inquiry:{he:"שליחת פנייה",en:"Send inquiry"},
- years:{he:"שנות ניסיון",en:"yrs experience"},
- count:{he:"מאמנים",en:"coaches"},
- padel:{he:"פאדל",en:"Padel"},
- tennis:{he:"טניס",en:"Tennis"},
- both:{he:"טניס ופאדל",en:"Tennis & Padel"}
-};
-let LANG='he';
-function t(k){return (T[k]&&T[k][LANG])||k;}
-function applyLang(lang){
- LANG=lang;
- document.documentElement.lang=lang;
- document.documentElement.dir=lang==='he'?'rtl':'ltr';
- document.querySelectorAll('[data-i18n]').forEach(el=>{
-   const k=el.getAttribute('data-i18n');
-   if(I18N[k]) el.textContent=I18N[k][lang];
- });
- const lb=document.getElementById('langBtn'); if(lb) lb.textContent=lang==='he'?'EN':'עב';
- try{if(typeof render==='function')render();}catch(e){}
- try{localStorage.setItem('coachone_lang',lang);}catch(e){}
-}
-function toggleLang(){applyLang(LANG==='he'?'en':'he');}
-
-/* ===== accessibility ===== */
-let a11y={zoom:1,contrast:false,links:false};
-function a11yApply(){
- document.body.style.zoom=a11y.zoom;
- document.body.classList.toggle('a11y-contrast',a11y.contrast);
- document.body.classList.toggle('a11y-links',a11y.links);
- try{localStorage.setItem('coachone_a11y',JSON.stringify(a11y));}catch(e){}
-}
-function a11yZoom(d){a11y.zoom=Math.min(1.5,Math.max(0.8,+(a11y.zoom+d).toFixed(2)));a11yApply();}
-function a11yToggle(k){a11y[k]=!a11y[k];a11yApply();}
-function a11yReset(){a11y={zoom:1,contrast:false,links:false};a11yApply();}
-function toggleA11y(){document.getElementById('a11yPanel').classList.toggle('open');}
 
 /* ===== init from storage ===== */
 (function(){
